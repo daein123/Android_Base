@@ -9,47 +9,41 @@ export default function DateSelection() {
 
 
     // 일주일 일자 계산
-    function getWeekDates(anchorDate) {
-        const diffDate = new Date(anchorDate);
-        if (anchorDate.getDay() !== 3) {
-            diffDate.setDate(anchorDate.getDate() - 3);
-        }
-        const currentDate = diffDate.getDate();
-        const maxDate = new Date(diffDate.getFullYear(), diffDate.getMonth() + 1, 0).getDate();
-        const maxBeforeDate = new Date(diffDate.getFullYear(), diffDate.getMonth(), 0).getDate();
+    function getWeekDates(dateObj) {
+        const toDay = dateObj.getDay();
+        const startDate = dateObj.getDate() - toDay;
 
-        return [
-            isLower(currentDate - 3) ? maxBeforeDate + (currentDate - 3) : currentDate - 3,
-            isLower(currentDate - 2) ? maxBeforeDate + (currentDate - 2) : currentDate - 2,
-            isLower(currentDate - 1) ? maxBeforeDate + (currentDate - 1) : currentDate - 1,
-            currentDate,
-            isOver(currentDate + 1) ? (currentDate + 1) - maxDate : currentDate + 1,
-            isOver(currentDate + 2) ? (currentDate + 2) - maxDate : currentDate + 2,
-            isOver(currentDate + 3) ? (currentDate + 3) - maxDate : currentDate + 3
-        ]
-
-        function isLower(value) {
-            if (value < 0) return true;
-            return false;
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+        const date = startDate;
+        const result = [];
+        for (var i = 0; i < 7; i++) {
+            const retObj = new Date(year, month, date + i);
+            result.push(retObj);
         }
-        function isOver(value) {
-            if (value > maxDate) return true;
-            return false;
-        }
+        return result;
     }
     return (
         <View>
 
             {/* 일월화수~토 */}
             <View style={styles.itemRow}>
-                {days.map((day, index) => (
-                    <Text key={index} style={styles.rowItem}>{day}</Text>
+                {weekDates.map((dateObj, index) => (
+                    <View key={index} style={styles.rowItem}>
+                        <View>
+                            <Text style={styles.dateText}>{days[dateObj.getDay()]}</Text>
+                        </View>
+                    </View>
                 ))}
             </View>
             {/* 날짜 */}
             <View style={styles.itemRow}>
-                {weekDates.map((date, index) => (
-                    <Text key={index} style={styles.rowItem}>{date}</Text>
+                {weekDates.map((dateObj, index) => (
+                    <View key={index} style={styles.rowItem}>
+                        <View style={styles.circledItem}>
+                            <Text style={styles.dateText}>{dateObj.getDate()}</Text>
+                        </View>
+                    </View>
                 ))}
             </View>
 
@@ -63,13 +57,22 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         flexDirection: 'row',
         justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#4a90e2',
     },
     rowItem: {
-        flex: 1,
+        flex: 1,                   // 요일 행과 동일하게 7칸 균등 분할
+        alignItems: 'center',      // 그 칸 안에서 원을 가운데로
+    },
+    circledItem: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         borderWidth: 1,
         borderColor: '#4a90e2',
-        textAlign: 'center'
-    }
+        backgroundColor: '#4a90e2',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dateText: {
+        textAlign: 'center',
+    },
 });
