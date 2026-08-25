@@ -42,13 +42,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#4a90e2',
+        borderColor: '#329EFF',
         borderRadius: 20,
         paddingHorizontal: 14,
         paddingVertical: 6,
     },
     upgradeText: {
-        color: '#4a90e2',
+        color: '#329EFF',
         fontWeight: 'bold',
         fontSize: 13,
         textAlign: 'center'

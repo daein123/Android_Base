@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from 'react';
 
 export default function DateSelection() {
@@ -41,7 +40,7 @@ export default function DateSelection() {
                 {weekDates.map((dateObj, index) => (
                     <View key={index} style={styles.rowItem}>
                         <View style={styles.circledItem}>
-                            <Text style={styles.dateText}>{dateObj.getDate()}</Text>
+                            <Text style={[styles.dateText, styles.whiteText]}>{dateObj.getDate()}</Text>
                         </View>
                     </View>
                 ))}
@@ -67,12 +66,15 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#4a90e2',
-        backgroundColor: '#4a90e2',
+        borderColor: '#329EFF',
+        backgroundColor: '#329EFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
     dateText: {
         textAlign: 'center',
     },
+    whiteText: {
+        color: 'white'
+    }
 });

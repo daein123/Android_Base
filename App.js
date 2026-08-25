@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Header from './component/header';
 import DateSelection from './component/date_selection';
+import MainContent from './component/mainContent';
 
 export default function App() {
     return (
@@ -11,6 +12,7 @@ export default function App() {
             <StatusBar style="auto" />
             <Header />
             <DateSelection />
+            <MainContent />
         </SafeAreaView>
     );
 }
