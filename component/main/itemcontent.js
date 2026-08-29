@@ -11,7 +11,7 @@ export default function ItemBox() {
                 </View>
                 <View style={styles.rightSection}>
                     <View style={styles.circleItem}>
-                        <MaterialCommunityIcons name="pencil-plus-outline" size={24} color="#329EFF" />
+                        <MaterialCommunityIcons name="pencil-plus-outline" size={20} color="#329EFF" />
                     </View>
                 </View>
             </View>
@@ -22,6 +22,7 @@ export default function ItemBox() {
 const styles = StyleSheet.create({
     centerContent: {
         alignItems: 'center',
+        paddingVertical: 10,
     },
     startButton: {
         width: '90%',
@@ -30,7 +31,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#329EFF',
         justifyContent: 'space-between',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor : 'white'
     },
     leftSection: {
         justifyContent: 'center'
@@ -41,10 +43,10 @@ const styles = StyleSheet.create({
     },
     circleItem: {
         borderWidth: 1,
-        borderColor: '#329EFF',
-        borderRadius: 25,
-        width: 50,
-        height: 50,
+        borderColor: '#858d96',
+        borderRadius: 20,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center'
     }
