@@ -25,102 +25,122 @@ export default function SubContent() {
                     <View style={[styles.gaugeBar, { width: '10%' }]}></View>
                 </View>
                 <View style={[styles.rowContent, { paddingHorizontal: 10 }]}>
-                    <View style={styles.mealSelection}>
-                        <View style={styles.mealSelection_textContainer}>
-                            <Text style={styles.mealSelection_circleText}>+</Text>
+                    <View style={styles.mealContainer}>
+                        <View style={styles.mealContainer_topItem}>
+                            <View style={styles.mealContainer_topItem_textContainer}>
+                                <Text style={styles.mealContainer_topItem_circleText}>+</Text>
+                            </View>
+                            <Feather name="sunrise" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
                         </View>
-                        <Feather name="sunrise" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
+                        <Text style={{ paddingHorizontal: 10, color: '#8594A5' }}>
+                            아침
+                        </Text>
                     </View>
-                    <View style={styles.mealSelection}>
-                        <View style={styles.mealSelection_textContainer}>
-                            <Text style={styles.mealSelection_circleText}>+</Text>
+                    <View style={styles.mealContainer}>
+                        <View style={styles.mealContainer_topItem}>
+                            <View style={styles.mealContainer_topItem_textContainer}>
+                                <Text style={styles.mealContainer_topItem_circleText}>+</Text>
+                            </View>
+                            <Feather name="sun" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
                         </View>
-                        <Feather name="sun" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
+                        <Text style={{ paddingHorizontal: 10, color: '#8594A5' }}>
+                            점심
+                        </Text>
                     </View>
-                    <View style={styles.mealSelection}>
-                        <View style={styles.mealSelection_textContainer}>
-                            <Text style={styles.mealSelection_circleText}>+</Text>
+                    <View style={styles.mealContainer}>
+                        <View style={styles.mealContainer_topItem}>
+                            <View style={styles.mealContainer_topItem_textContainer}>
+                                <Text style={styles.mealContainer_topItem_circleText}>+</Text>
+                            </View>
+                            <Feather name="moon" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
                         </View>
-                        <Feather name="moon" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
+                        <Text style={{ paddingHorizontal: 10, color: '#8594A5' }}>
+                            저녁
+                        </Text>
                     </View>
-                    <View style={styles.mealSelection}>
-                        <View style={styles.mealSelection_textContainer}>
-                            <Text style={styles.mealSelection_circleText}>+</Text>
+                    <View style={styles.mealContainer}>
+                        <View style={styles.mealContainer_topItem}>
+                            <View style={styles.mealContainer_topItem_textContainer}>
+                                <Text style={styles.mealContainer_topItem_circleText}>+</Text>
+                            </View>
+                            <MaterialCommunityIcons name="candy" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
                         </View>
-                        <MaterialCommunityIcons name="candy" size={40} color="#FFDFAC" style={{ marginVertical: 10 }} />
+                        <Text style={{ paddingHorizontal: 10, color: '#8594A5' }}>
+                            간식
+                        </Text>
                     </View>
                 </View>
             </View>
             <View style={styles.subContainer}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <Feather name="target" size={16} color="#5eb5f8" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>운동 목표</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>운동 목표</Text>
                     </View>
-                    <Text style={{color: '#858d96', fontSize: 13}}>주간 운동 목표를 설정해주세요</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>주간 운동 목표를 설정해주세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
-            <View style={[styles.subContainer, {height: 100}]}>
+            <View style={[styles.subContainer, { height: 100 }]}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <MaterialIcons name="monitor-weight" size={16} color="#C57CFF" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>체중</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>체중</Text>
                     </View>
-                    <Text style={{fontSize: 15, marginBottom: 5}}>-- KG</Text>
-                    <Text style={{color: '#858d96', fontSize: 13}}>신체 데이터를 입력해주세요</Text>
+                    <Text style={{ fontSize: 15, marginBottom: 5 }}>-- KG</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>신체 데이터를 입력해주세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
             <View style={styles.subContainer}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <MaterialCommunityIcons name="file-refresh-outline" size={16} color="#858d96" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>루틴</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>루틴</Text>
                     </View>
-                    <Text style={{color: '#858d96', fontSize: 13}}>자주 사용하는 운동을 루틴으로 관리하세요</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>자주 사용하는 운동을 루틴으로 관리하세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
             <View style={styles.subContainer}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <MaterialIcons name="folder" size={24} color="#84C5FF" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>라이브러리</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>라이브러리</Text>
                     </View>
-                    <Text style={{color: '#858d96', fontSize: 13}}>나만의 운동 라이브러리를 만드세요</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>나만의 운동 라이브러리를 만드세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
             <View style={styles.subContainer}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <MaterialIcons name="folder-copy" size={24} color="#FFE6BD" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>프로그램</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>프로그램</Text>
                     </View>
-                    <Text style={{color: '#858d96', fontSize: 13}}>프로그램에 참여하고 한 단계 성장하세요</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>프로그램에 참여하고 한 단계 성장하세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
             <View style={styles.subContainer}>
                 <View>
-                    <View style={{flexDirection: 'row', paddingVertical: 10, alignItems:'center'}}>
+                    <View style={{ flexDirection: 'row', paddingVertical: 10, alignItems: 'center' }}>
                         <MaterialIcons name="av-timer" size={24} color="#8794A2" />
-                        <Text style={{marginLeft: 5, fontSize: 16, fontWeight: '600'}}>인터벌 타이머</Text>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: '600' }}>인터벌 타이머</Text>
                     </View>
-                    <Text style={{color: '#858d96', fontSize: 13}}>인터벌 훈련을 해보세요</Text>
+                    <Text style={{ color: '#858d96', fontSize: 13 }}>인터벌 훈련을 해보세요</Text>
                 </View>
-                <View style={[styles.circleItem, {marginTop: 5}]}>
+                <View style={[styles.circleItem, { marginTop: 5 }]}>
                     <AntDesign name="arrow-right" size={18} color="#acb1b8" />
                 </View>
             </View>
@@ -136,7 +156,7 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '90%',
-        height: 200,
+        height: 230,
         borderRadius: 15,
         backgroundColor: 'white',
         alignItems: 'center',
@@ -168,19 +188,19 @@ const styles = StyleSheet.create({
         height: 15,
         borderRadius: 10,
     },
-    mealSelection: {
-        width: '100%',
-        flexDirection: 'row',
+    mealContainer: {
+        height: 100,
         borderStyle: 'dashed',
         borderWidth: 1,
         borderColor: '#bfc4c7',
         borderRadius: 10,
-        flex: 1,
-        height: 70,
-        marginHorizontal: 3,
         overflow: 'hidden',
+        width: '24%'
     },
-    mealSelection_textContainer: {
+    mealContainer_topItem: {
+        flexDirection: 'row',
+    },
+    mealContainer_topItem_textContainer: {
         width: 25,
         height: 25,
         backgroundColor: '#000000',
@@ -191,7 +211,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 10,
     },
-    mealSelection_circleText: {
+    mealContainer_topItem_circleText: {
         fontSize: 16,
         fontWeight: '300',
         color: '#ffffff',
