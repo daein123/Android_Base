@@ -8,17 +8,21 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
+import { exerciseList } from './exerciseData'
+
 
 export default function AddSelf() {
     const [checked, setChecked] = useState(false);
+    // 0: 북마크, 1: 전체, 2: 하체, 3: 가슴, 4: 등....
+    const [showExerciseType, setShowExerciseType] = useState(1);
     return (
         <View style={styles.container}>
             <View style={styles.searchBar}>
                 <View style={styles.searchBar_input}>
-                    <EvilIcons name="search" size={24} color="black" style={{marginHorizontal: 5}}/>
+                    <EvilIcons name="search" size={24} color="black" style={{ marginHorizontal: 5 }} />
                     <Text style={styles.searchBar_input_text}>찾으시는 운동을 검색해보세요.</Text>
                 </View>
-                <MaterialCommunityIcons name="card-search-outline" size={35} color="black" style={{marginLeft: 10}}/>
+                <MaterialCommunityIcons name="card-search-outline" size={35} color="black" style={{ marginLeft: 10 }} />
             </View>
             <ScrollView contentContainerStyle={styles.tabContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View style={styles.tabContainer_item}><FontAwesome name="bookmark" size={19} color="#329EFF" /></View>
@@ -34,18 +38,24 @@ export default function AddSelf() {
                 <Text>빈도순</Text>
                 <AntDesign name="caret-down" size={20} color="black" />
             </View>
-            <View style={styles.exerciseContainer}>
-                <View style={styles.exerciseItem}>
-                    <View style={styles.exerciseItem_left}>
-                        <Pressable onPress={() => setChecked(!checked)}>
-                            <Ionicons name={checked ? 'checkbox' : 'square-outline'} size={20} color={checked ? '#329EFF' : '#ccc'} />
-                            <Text>등 | 풀업</Text>
-                        </Pressable>
-                        <Image source={require('../../assets/exercise/레그 익스텐션.jpg')} />
+            <ScrollView contentContainerStyle={styles.exerciseContainer} showsVerticalScrollIndicator={false}>
+                {exerciseList.map((item) => (
+                    <View style={styles.exerciseItem}>
+                        <View style={styles.exerciseItem_left}>
+                            <Pressable onPress={() => setChecked(!checked)}>
+                                <Ionicons name={checked ? 'checkbox' : 'square-outline'} size={20} color={checked ? '#329EFF' : '#ccc'} />
+                            </Pressable>
+                            <Image source={item.image} contentFit="cover" style={{ width: 60, height: 60 }} />
+                            <Text>{item.category} | {item.name}</Text>
+                        </View>
+                        <View style={styles.exerciseItem_right}>
+                            <Text style={{ marginHorizontal: 5, fontSize: 16 }}>0</Text>
+                            <FontAwesome name="bookmark" size={22} color="#329EFF" style={{ marginHorizontal: 5 }} />
+                            <AntDesign name="info-circle" size={24} color="#516273" style={{ marginHorizontal: 5 }} />
+                        </View>
                     </View>
-                    <View style={styles.exerciseItem_right}></View>
-                </View>
-            </View>
+                ))}
+            </ScrollView>
         </View>
     );
 }
@@ -99,5 +109,23 @@ const styles = StyleSheet.create({
         // backgroundColor: 'blue',
         borderBottomWidth: 1,
         borderColor: '#E7EAEC'
+    },
+    exerciseContainer: {
+        flex: 1,
+    },  
+    exerciseItem: {
+        paddingVertical: 5,
+        borderBottomWidth: 1,
+        borderColor: '#E7EAEC',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    exerciseItem_left: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    exerciseItem_right: {
+        flexDirection: 'row',
+        alignItems: 'center'
     }
 });
