@@ -40,7 +40,7 @@ export default function AddSelf() {
             </View>
             <ScrollView contentContainerStyle={styles.exerciseContainer} showsVerticalScrollIndicator={false}>
                 {exerciseList.map((item) => (
-                    <View style={styles.exerciseItem}>
+                    <View key={item.name} style={styles.exerciseItem}>
                         <View style={styles.exerciseItem_left}>
                             <Pressable onPress={() => setChecked(!checked)}>
                                 <Ionicons name={checked ? 'checkbox' : 'square-outline'} size={20} color={checked ? '#329EFF' : '#ccc'} />

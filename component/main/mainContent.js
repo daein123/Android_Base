@@ -1,18 +1,24 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default function MainContent() {
+    const navigation = useNavigation();
     return (
         <View style={styles.centerContent}>
-            <FontAwesome6 name='dumbbell' size={40} style={styles.defaultPadding}/>
+            <FontAwesome6 name='dumbbell' size={40} style={styles.defaultPadding} />
             <Text style={[styles.defaultPadding, styles.startText]}>운동 시작해 볼까요?</Text>
-            <View style={[styles.defaultPadding, styles.startButton]}>
+            <Pressable style={[styles.defaultPadding, styles.startButton]} onPress={() => toSetWorkout()}>
                 <Text style={styles.startButton_text}>운동 시작하기</Text>
-            </View>
+            </Pressable>
             <Text style={[styles.defaultPadding, styles.skipText]}>하루 쉬어가기</Text>
         </View>
     );
+
+    function toSetWorkout() {
+        navigation.navigate('SetWorkout');
+    }
 }
 
 const styles = StyleSheet.create({
@@ -25,7 +31,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     startText: {
-        fontSize : 16,
+        fontSize: 16,
         fontWeight: '600',
         paddingBottom: 30,
     },
@@ -39,7 +45,7 @@ const styles = StyleSheet.create({
     },
     startButton_text: {
         color: 'white',
-        fontSize : 18,
+        fontSize: 18,
         fontWeight: '600',
     },
     skipText: {

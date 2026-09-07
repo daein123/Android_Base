@@ -4,6 +4,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from 'react';
 import AddSelf from './addself';
+import History from './history';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // import AddSelf from "./addself";
 
@@ -11,26 +13,38 @@ export default function SetWorkout() {
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
     const [activeIndex, setActiveIndex] = useState(0);
-    const getTabColor = (index) => {return activeIndex === index ? "black" : "#858d96"};
-    const getTabBorder = (index) => {return activeIndex === index ? 1 : 0};
+    const getTabColor = (index) => { return activeIndex === index ? "black" : "#858d96" };
+    const getTabBorder = (index) => { return activeIndex === index ? 1 : 0 };
     return (
-        <View>
-            <View style={styles.topBar}>
-                <Ionicons name="caret-back-outline" size={30} color="black" />
-                <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
-                <AntDesign name="youtube" size={30} color="black" />
-            </View>
-            <View style={styles.tabBar}>
-                <Text style={[styles.tabBar_text, {color: getTabColor(0), borderBottomWidth: getTabBorder(0) }]}>직접 추가</Text>
-                <Text style={[styles.tabBar_text, {color: getTabColor(1) }]}>내 루틴</Text>
-                <Text style={[styles.tabBar_text, {color: getTabColor(2) }]}>불러오기</Text>
-            </View>
-            <AddSelf />
-        </View>
+        <View style={styles.mainContainer}>
+            <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+                <View>
+                    <View style={styles.topBar}>
+                        <Ionicons name="caret-back-outline" size={30} color="black" />
+                        <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
+                        <AntDesign name="youtube" size={30} color="black" />
+                    </View>
+                    <View style={styles.tabBar}>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(0), borderBottomWidth: getTabBorder(0) }]} onPress={() => navigation.navigate('./addSelf.js')}>직접 추가</Text>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(1) }]}>내 루틴</Text>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(2) }]}>불러오기</Text>
+                    </View>
+                    <AddSelf></AddSelf>
+                </View>
+            </SafeAreaView>
+        </View >
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        // backgroundColor: '#fff',
+    },
+    mainContainer: {
+        flex: 1,
+        backgroundColor : '#ffffff'
+    },
     topBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
