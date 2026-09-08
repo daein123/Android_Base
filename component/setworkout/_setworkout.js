@@ -18,7 +18,6 @@ export default function SetWorkout() {
     return (
         <View style={styles.mainContainer}>
             <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-                <View>
                     <View style={styles.topBar}>
                         <Ionicons name="caret-back-outline" size={30} color="black" />
                         <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
@@ -30,7 +29,6 @@ export default function SetWorkout() {
                         <Text style={[styles.tabBar_text, { color: getTabColor(2) }]}>불러오기</Text>
                     </View>
                     <AddSelf></AddSelf>
-                </View>
             </SafeAreaView>
         </View >
     );

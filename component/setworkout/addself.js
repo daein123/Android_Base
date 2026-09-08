@@ -90,7 +90,8 @@ const styles = StyleSheet.create({
     },
     tabContainer: {
         flexDirection: 'row',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        height: 40
     },
     tabContainer_item: {
         width: 55,
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
         borderColor: '#E7EAEC'
     },
     exerciseContainer: {
-        flex: 1,
+        // flex: 1,
     },  
     exerciseItem: {
         paddingVertical: 5,
