@@ -24,11 +24,13 @@ export default function SetWorkout() {
                         <AntDesign name="youtube" size={30} color="black" />
                     </View>
                     <View style={styles.tabBar}>
-                        <Text style={[styles.tabBar_text, { color: getTabColor(0), borderBottomWidth: getTabBorder(0) }]} onPress={() => navigation.navigate('./addSelf.js')}>직접 추가</Text>
-                        <Text style={[styles.tabBar_text, { color: getTabColor(1) }]}>내 루틴</Text>
-                        <Text style={[styles.tabBar_text, { color: getTabColor(2) }]}>불러오기</Text>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(0), borderBottomWidth: getTabBorder(0) }]} onPress={() => setActiveIndex(0)}>직접 추가</Text>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(1) }]} onPress={() => setActiveIndex(1)}>내 루틴</Text>
+                        <Text style={[styles.tabBar_text, { color: getTabColor(2) }]} onPress={() => setActiveIndex(2)}>불러오기</Text>
                     </View>
-                    <AddSelf></AddSelf>
+                    {activeIndex === 2 && <AddSelf></AddSelf>}
+                    {activeIndex === 1 && <Text>내 루틴</Text>}
+                    {activeIndex === 0 && <History></History>}
             </SafeAreaView>
         </View >
     );

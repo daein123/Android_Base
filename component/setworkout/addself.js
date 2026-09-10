@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderBottomWidth: 1,
         borderColor: '#E7EAEC',
-        flexDirection: 'row',
+        flexDirection: 'row', 
         justifyContent: 'space-between'
     },
     exerciseItem_left: {
