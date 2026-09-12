@@ -9,6 +9,7 @@ import SetWorkout from './component/setworkout/_setworkout';
 import History from './component/setworkout/history';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Record from './component/record/record';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ export default function App() {
                 <Stack.Screen name="Main" component={MainPage}></Stack.Screen>
                 <Stack.Screen name="SetWorkout" component={SetWorkout}></Stack.Screen>
                 <Stack.Screen name="History" component={History}></Stack.Screen>
+                <Stack.Screen name="Record" component={Record}></Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer>
     )

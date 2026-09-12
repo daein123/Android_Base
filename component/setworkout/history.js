@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 export default function History() {
     const htyObj = [
         {
@@ -48,23 +50,36 @@ export default function History() {
     return (
         <View style={styles.container}>
             <Text style={styles.container_title}>이전 운동 기록을 선택해주세요.</Text>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.htyContainer}>
-                    <View style={styles.htyContainer_left}>
-                        <Text>left</Text>
-                    </View>
-                    <View style={styles.htyContainer_right}>
-                        <Text>right</Text>
-                    </View>
-                </View>
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                {htyObj.map((item, index) => {
+                    const dateText = item.month + "월 "
+                        + item.date + "일 "
+                        + "(" + item.day + ") "
+                        + item.frequency + "회차";
+                    const typeText = item.type.map((type) => { return type + "  ·  "; });
+                    return (
+                        <View key={index} style={styles.htyContainer}>
+                            <View style={styles.htyContainer_left}>
+                                <Text style={{ fontSize: 17, fontWeight: '500', paddingBottom: 5 }}>{dateText}</Text>
+                                <Text style={{ fontSize: 17, fontWeight: '250' }}>{typeText}</Text>
+                            </View>
+                            <View style={styles.htyContainer_right}>
+                                <AntDesign name="down" size={20} color="black" />
+                            </View>
+                        </View>
+                    )
+                })}
             </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        paddingVertical: 5,
+    },
     container: {
-
+        flex: 1
     },
     container_title: {
         paddingHorizontal: 20,
@@ -77,15 +92,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginHorizontal: 20,
-        height: 100,
+        height: 90,
         backgroundColor: '#F3F4F6',
         borderRadius: 15,
+        marginBottom: 10,
+        alignItems: 'center'
     },
     htyContainer_left: {
-        paddingTop: 20,
-        paddingLeft: 10,
+        paddingLeft: 15,
     },
     htyContainer_right: {
-
+        paddingHorizontal: 20,
     },
 });

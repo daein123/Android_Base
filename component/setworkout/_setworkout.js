@@ -6,10 +6,13 @@ import { useState } from 'react';
 import AddSelf from './addself';
 import History from './history';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 // import AddSelf from "./addself";
 
 export default function SetWorkout() {
+    const navigation = useNavigation();
+
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
     const [activeIndex, setActiveIndex] = useState(0);
@@ -19,7 +22,7 @@ export default function SetWorkout() {
         <View style={styles.mainContainer}>
             <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
                     <View style={styles.topBar}>
-                        <Ionicons name="caret-back-outline" size={30} color="black" />
+                        <Ionicons name="caret-back-outline" size={30} color="black" onPress={() => navigation.goBack()}/>
                         <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
                         <AntDesign name="youtube" size={30} color="black" />
                     </View>
@@ -28,9 +31,9 @@ export default function SetWorkout() {
                         <Text style={[styles.tabBar_text, { color: getTabColor(1) }]} onPress={() => setActiveIndex(1)}>내 루틴</Text>
                         <Text style={[styles.tabBar_text, { color: getTabColor(2) }]} onPress={() => setActiveIndex(2)}>불러오기</Text>
                     </View>
-                    {activeIndex === 2 && <AddSelf></AddSelf>}
+                    {activeIndex === 0 && <AddSelf></AddSelf>}
                     {activeIndex === 1 && <Text>내 루틴</Text>}
-                    {activeIndex === 0 && <History></History>}
+                    {activeIndex === 2 && <History></History>}
             </SafeAreaView>
         </View >
     );

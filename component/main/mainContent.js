@@ -12,7 +12,7 @@ export default function MainContent() {
             <Pressable style={[styles.defaultPadding, styles.startButton]} onPress={() => toSetWorkout()}>
                 <Text style={styles.startButton_text}>운동 시작하기</Text>
             </Pressable>
-            <Text style={[styles.defaultPadding, styles.skipText]}>하루 쉬어가기</Text>
+            <Text style={[styles.defaultPadding, styles.skipText]} onPress={() => navigation.navigate('Record')}>하루 쉬어가기</Text>
         </View>
     );
 
