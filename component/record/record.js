@@ -1,10 +1,11 @@
-import { Pressable, StyleSheet, Text, View, ScrollView, Button } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from 'react';
+import DottedBorderContainer from './dotted';
 
 export default function Record() {
     const navigation = useNavigation();
@@ -58,6 +59,9 @@ export default function Record() {
         }
     ];
 
+    const [currentTotal, setCurrentTotal] = useState(0);
+    const [beforeTotal, setBeforeTotal] = useState(0);
+
     return (
         <View style={styles.mainContainer}>
             <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -67,6 +71,15 @@ export default function Record() {
                     <AntDesign name="menu" size={24} color="black" />
                 </View>
                 <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                    <View style={styles.totalVolume}>
+                        <Text style={styles.totalVolume_left_text}>전체 볼륨</Text>
+                        <View style={styles.totalVolume_right}>
+                            <Text style={styles.totalVolume_right_text}>{currentTotal}kg</Text>
+                            <Text style={[styles.totalVolume_right_text, { color: ((currentTotal - beforeTotal) >= 0 ? "#329EFF" : "#E95E65") }]}>
+                                {(currentTotal - beforeTotal) >= 0 ? "+" : ""}{currentTotal - beforeTotal}kg
+                            </Text>
+                        </View>
+                    </View>
                     <View style={styles.container}>
                         <View style={styles.topInfo}>
                             <View style={styles.topInfo_left}>
@@ -121,15 +134,37 @@ export default function Record() {
                         <View style={styles.buttonContainer}>
                             <View style={styles.buttonContainer_btn}>
                                 <AntDesign name="minus" size={20} color="#8899AB" />
-                                <Text style={[{color:"#8899AB"}, styles.buttonContainer_btn_text]}>세트제거</Text>
+                                <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
                             </View>
                             <View style={styles.buttonContainer_btn}>
                                 <AntDesign name="plus" size={20} color="#329EFF" />
-                                <Text style={[{color:"#329EFF"}, styles.buttonContainer_btn_text]}>세트추가</Text>
+                                <Text style={[{ color: "#329EFF" }, styles.buttonContainer_btn_text]}>세트추가</Text>
                             </View>
                         </View>
                     </View>
+                    <DottedBorderContainer style={styles.addContainer} color="#CED5DC" strokeWidth={3} borderRadius={12}>
+                        <View style={styles.addContainer_view}>
+                            <AntDesign name="plus" size={20} color="#329EFF" />
+                            <Text style={styles.addContainer_text}>운동 추가</Text>
+                        </View>
+                    </DottedBorderContainer>
                 </ScrollView>
+                <View style={styles.bottomContainer}>
+                    <View style={styles.bottomContainer_left}>
+                        <View style={styles.bottomContainer_left_item}>
+                            <Text style={{ fontSize: 17, fontWeight: '800', color: '#329EFF' }}>ON</Text>
+                            <Text style={{ fontSize: 12, fontWeight: '800', color: '#44515C' }}>휴식 타이머</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.bottomContainer_left_item}>
+                            <Text style={{ fontSize: 17, fontWeight: '800', color: '#8697A8' }}>50분</Text>
+                            <Text style={{ fontSize: 12, fontWeight: '800', color: '#44515C' }}>운동 시간</Text>
+                        </View>
+                    </View>
+                    <View style={styles.bottomContainer_right}>
+                        <Text style={{ fontSize: 19, fontWeight: '600', color: '#ffffff' }}>편집 완료</Text>
+                    </View>
+                </View>
             </SafeAreaView>
         </View >
     );
@@ -142,7 +177,7 @@ const styles = StyleSheet.create({
     },
     mainContainer: {
         flex: 1,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#F3F4F6'
     },
     topBar: {
         flexDirection: 'row',
@@ -154,10 +189,36 @@ const styles = StyleSheet.create({
     scrollContainer: {
         backgroundColor: "#F3F4F6"
     },
+
+
+    totalVolume: {
+        backgroundColor: '#ffffff',
+        marginHorizontal: 20,
+        marginTop: 10,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 20,
+        alignItems: 'center'
+    },
+    totalVolume_left_text: {
+        fontSize: 16,
+        fontWeight: '700'
+    },
+    totalVolume_right: {
+        flexDirection: 'row',
+        gap: 3
+    },
+    totalVolume_right_text: {
+        fontSize: 16,
+        fontWeight: '700'
+    },
+
     container: {
         backgroundColor: '#ffffff',
         marginHorizontal: 20,
-        marginVertical: 20,
+        marginVertical: 10,
         borderRadius: 10
     },
     topInfo: {
@@ -273,6 +334,64 @@ const styles = StyleSheet.create({
     buttonContainer_btn_text: {
         fontSize: 18,
         fontWeight: '600'
-    }
+    },
 
+    addContainer: {
+        backgroundColor: 'color',
+        marginHorizontal: 20,
+        marginVertical: 5,
+    },
+    addContainer_view: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 10,
+        height: 50,
+        alignItems: 'center'
+    },
+    addContainer_text: {
+        fontSize: 18,
+        color: '#329EFF',
+        fontWeight: '700'
+    },
+
+    bottomContainer: {
+        backgroundColor: '#ffffff',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 60,
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        gap: 5
+    },
+    bottomContainer_left: {
+        backgroundColor: '#F3F4F6',
+        flexDirection: 'row',
+        flex: 1,
+        justifyContent: 'space-evenly',
+        gap: 3,
+        borderRadius: 3,
+        alignItems: 'center'
+    },
+    bottomContainer_left_item: {
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+    },
+    bottomContainer_left_item_text: {
+        fontSize: 15,
+    },
+    divider: {
+        width: 1,
+        backgroundColor: '#d3d4d4',
+        height: '30',
+
+    },
+    bottomContainer_right: {
+        backgroundColor: '#329EFF',
+        flex: 1,
+        justifyContent: 'space-evenly',
+        gap: 3,
+        borderRadius: 3,
+        alignItems: 'center'
+    },
 });

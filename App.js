@@ -14,25 +14,6 @@ import Record from './component/record/record';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-    // const mainP = (
-    //     <View style={styles.mainContainer}>
-    //         <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-    //             <LinearGradient colors={['#ffffff', '#dceeff', '#F1F2F4']}
-    //                 style={{ flex: 1 }}>
-    //                 <StatusBar style="auto" />
-    //                 <MainPage></MainPage>
-    //             </LinearGradient>
-    //             <BottomBar />
-    //         </SafeAreaView>
-    //     </View>
-    // );
-    const SetWorkoutP = (
-        <View style={styles.mainContainer}>
-            <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-                <SetWorkout />
-            </SafeAreaView>
-        </View>
-    )
     return (
         // SetWorkoutP
         <NavigationContainer>
