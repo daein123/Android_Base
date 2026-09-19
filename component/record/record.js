@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -9,6 +9,7 @@ import DottedBorderContainer from './dotted';
 import Checkbox from 'expo-checkbox';
 
 export default function Record() {
+    const route = useRoute();
     const navigation = useNavigation();
 
     const today = new Date();
