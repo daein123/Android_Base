@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -16,14 +16,18 @@ const Stack = createNativeStackNavigator();
 export default function App() {
     return (
         // SetWorkoutP
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown : false }}>
-                <Stack.Screen name="Main" component={MainPage}></Stack.Screen>
-                <Stack.Screen name="SetWorkout" component={SetWorkout}></Stack.Screen>
-                <Stack.Screen name="History" component={History}></Stack.Screen>
-                <Stack.Screen name="Record" component={Record}></Stack.Screen>
-            </Stack.Navigator>
-        </NavigationContainer>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <TouchableWithoutFeedback>
+                <NavigationContainer onPress={Keyboard.dismiss}>
+                    <Stack.Navigator screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Main" component={MainPage}></Stack.Screen>
+                        <Stack.Screen name="SetWorkout" component={SetWorkout}></Stack.Screen>
+                        <Stack.Screen name="History" component={History}></Stack.Screen>
+                        <Stack.Screen name="Record" component={Record}></Stack.Screen>
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }
 

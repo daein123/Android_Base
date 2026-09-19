@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from 'react';
 import DottedBorderContainer from './dotted';
+import Checkbox from 'expo-checkbox';
 
 export default function Record() {
     const navigation = useNavigation();
@@ -13,6 +14,7 @@ export default function Record() {
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
     const [activeIndex, setActiveIndex] = useState(0);
+    const [allCheck, setAllCheck] = useState(false);
 
     const tempObj = [
         {
@@ -99,7 +101,7 @@ export default function Record() {
                             <Text>|</Text>
                             <Text>1:30</Text>
                         </View>
-                        <View style={styles.memoContainer}>
+                        <View style={styles.workoutMemoContainer}>
                             <Text style={{ color: '#a8b1b9', fontSize: 15, fontWeight: '700' }}>30-30-30 목</Text>
                             <Text style={{ color: '#A9B4BF' }}>드롭다운으로 함</Text>
                         </View>
@@ -148,6 +150,17 @@ export default function Record() {
                             <Text style={styles.addContainer_text}>운동 추가</Text>
                         </View>
                     </DottedBorderContainer>
+                    <View style={styles.memoContainer}>
+                        <Text style={styles.memoContainer_title}>
+                            메모
+                        </Text>
+                        <TextInput style={styles.memoContainer_content} placeholder={'오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요'}>
+                        </TextInput>
+                    </View>
+                    <View style={styles.allCheckContainer}>
+                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={() => {console.log(allCheck); setAllCheck(!allCheck);}} value={allCheck} />
+                        <Text style={styles.allCheckContainer_text}>세트 전체 체크</Text>
+                    </View>
                 </ScrollView>
                 <View style={styles.bottomContainer}>
                     <View style={styles.bottomContainer_left}>
@@ -184,7 +197,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 10,
         height: 50,
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#ffffff'
     },
     scrollContainer: {
         backgroundColor: "#F3F4F6"
@@ -251,7 +265,7 @@ const styles = StyleSheet.create({
         gap: 5,
         paddingHorizontal: 10,
     },
-    memoContainer: {
+    workoutMemoContainer: {
         backgroundColor: "#F3F4F6",
         marginHorizontal: 10,
         marginVertical: 10,
@@ -340,6 +354,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'color',
         marginHorizontal: 20,
         marginVertical: 5,
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
     },
     addContainer_view: {
         flexDirection: 'row',
@@ -352,6 +368,33 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#329EFF',
         fontWeight: '700'
+    },
+
+    memoContainer: {
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        marginHorizontal: 20,
+        marginVertical: 5,
+    },
+    memoContainer_title: {
+        marginTop: 10,
+    },
+    memoContainer_content: {
+        color: '#b8b8b8'
+    },
+
+    allCheckContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 5,
+        paddingVertical: 20,
+    },
+    allCheckContainer_checkbox: {
+    },
+    allCheckContainer_text: {
+
     },
 
     bottomContainer: {
