@@ -10,6 +10,7 @@ import Checkbox from 'expo-checkbox';
 
 export default function Record() {
     const route = useRoute();
+    console.log(route);
     const navigation = useNavigation();
 
     const today = new Date();

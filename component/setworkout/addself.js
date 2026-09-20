@@ -22,12 +22,13 @@ export default function AddSelf() {
     const [exList, setExList] = useState(exerciseList);
 
     const [workout, setWorkout] = useState([]); // record로 보낼 운동들 (일단은 name으로 보내기)
+    const [workoutCategory, setWorkoutCategory] = useState([]);
 
     // exList에 check 값을 반영하는 함수
     function updateChecked(exName) {
         const list = exList.map((item) => {
             if (exName === item.name) {
-                updateWorkout(exName, !item.checked);
+                updateWorkout(exName, item.category, !item.checked);
                 return { ...item, checked: !item.checked };
             }
             return item;
@@ -36,10 +37,24 @@ export default function AddSelf() {
     }
     
     // record.js로 보낼 운동들에 대하여 workout 변수에 설정하는 함수
-    function updateWorkout(exName, checked) {
+    function updateWorkout(exName, category, checked) {
         const arr = workout.filter((item) => item !== exName);
         if (checked === false) setWorkout(arr);
         else setWorkout([...arr, exName]);
+    }
+
+    // Record.js에서 활용할 수 있도록 log, Record 객체 만들어 보내기
+    function getWorkout() {
+        const logId = Math.random() * 100000; // 5자리 무작위 숫자
+        const recordId = Math.random() * 100000; // 5자리 무작위 숫자
+        const date = new Date();
+        const log = {
+            id: logId, 
+            date: date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate(),
+            memo: ""
+        };
+        console.log([exList.filter((item) => item.checked), log]);
+        return [exList.filter((item) => item.checked), log];
     }
     return (
         <View style={styles.container}>
@@ -91,7 +106,7 @@ export default function AddSelf() {
                 <View style={styles.bottomContainer_left}>
                     <AntDesign name="plus" size={20} color="#556678" />
                 </View>
-                <Pressable onPress={() => navigation.navigate('Record', {workout: workout})} style={[styles.bottomContainer_right, {backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE')}]}>
+                <Pressable onPress={() => navigation.navigate('Record', getWorkout())} style={[styles.bottomContainer_right, {backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE')}]}>
                     <Text style={[styles.bottomContainer_right_text, 
                         {color: (workout.length > 0 ? '#ffffff' : '#C2CAD4')}]
                     }>
