@@ -9,8 +9,21 @@ import DottedBorderContainer from './dotted';
 import Checkbox from 'expo-checkbox';
 
 export default function Record() {
+    // route 
     const route = useRoute();
-    console.log(route);
+
+    // route params - log 세팅
+    const [log, setLog] = useState(route.params[1]);
+
+    // route params - record 배열 객체 세팅
+    const recordArr = initRecord(route.params[0], log);
+    const [record, setRecord] = useState(recordArr);
+
+    // 초기 set 객체 배열 세팅
+    const setArr = initSet(recordArr);
+    const [set, setSet] = useState(setArr);
+
+
     const navigation = useNavigation();
 
     const today = new Date();
@@ -65,6 +78,45 @@ export default function Record() {
 
     const [currentTotal, setCurrentTotal] = useState(0);
     const [beforeTotal, setBeforeTotal] = useState(0);
+
+    function initRecord(recordArr, logObj) {
+        var arr = [];
+        var obj = {};
+        var cnt = 0;
+        recordArr.forEach((item) => {
+            var obj = {
+                logId: logObj.id,
+                id: Math.floor(Math.random() * 100000),
+                category: item.category,
+                name: item.name,
+                order: cnt++,
+                // restTime: "", // -> 여기부터는 애초에 세팅이 돼서 올 수 있다고 본다. 운동 선택 페이지에서 받기
+                // totalVolume: 0,
+                // memo: {
+                //     date: '26-05-30',
+                //     content: '드롭으로 진행'
+                // },
+            }
+            arr.push(obj);
+        });
+        return arr;
+    }
+    function initSet(recordArr) {
+        var obj = {};
+        recordArr.forEach((item) => {
+            obj[item.id] = []
+            var result = {
+                id: Math.floor(Math.random() * 100000),
+                recordId: item.id,
+                order: 0,
+                weight: 0,
+                rep: 0,
+                pre: 0
+            }
+            obj[item.id].push(result);
+        });
+        return obj;
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -160,7 +212,7 @@ export default function Record() {
                         </TextInput>
                     </View>
                     <View style={styles.allCheckContainer}>
-                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={() => {console.log(allCheck); setAllCheck(!allCheck);}} value={allCheck} />
+                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={() => { console.log(allCheck); setAllCheck(!allCheck); }} value={allCheck} />
                         <Text style={styles.allCheckContainer_text}>세트 전체 체크</Text>
                     </View>
                 </ScrollView>

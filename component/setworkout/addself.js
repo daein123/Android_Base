@@ -28,7 +28,7 @@ export default function AddSelf() {
     function updateChecked(exName) {
         const list = exList.map((item) => {
             if (exName === item.name) {
-                updateWorkout(exName, item.category, !item.checked);
+                updateWorkout(exName, !item.checked);
                 return { ...item, checked: !item.checked };
             }
             return item;
@@ -37,7 +37,7 @@ export default function AddSelf() {
     }
     
     // record.js로 보낼 운동들에 대하여 workout 변수에 설정하는 함수
-    function updateWorkout(exName, category, checked) {
+    function updateWorkout(exName,  checked) {
         const arr = workout.filter((item) => item !== exName);
         if (checked === false) setWorkout(arr);
         else setWorkout([...arr, exName]);
@@ -45,15 +45,14 @@ export default function AddSelf() {
 
     // Record.js에서 활용할 수 있도록 log, Record 객체 만들어 보내기
     function getWorkout() {
-        const logId = Math.random() * 100000; // 5자리 무작위 숫자
-        const recordId = Math.random() * 100000; // 5자리 무작위 숫자
+        const logId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
+        const recordId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
         const date = new Date();
         const log = {
             id: logId, 
             date: date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate(),
             memo: ""
         };
-        console.log([exList.filter((item) => item.checked), log]);
         return [exList.filter((item) => item.checked), log];
     }
     return (
