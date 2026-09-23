@@ -14,6 +14,7 @@ export default function Record() {
 
     // route params - log 세팅
     const [log, setLog] = useState(route.params[1]);
+    console.log(route.params[1]);
 
     // route params - record 배열 객체 세팅
     const recordArr = initRecord(route.params[0], log);
@@ -81,7 +82,6 @@ export default function Record() {
 
     function initRecord(recordArr, logObj) {
         var arr = [];
-        var obj = {};
         var cnt = 0;
         recordArr.forEach((item) => {
             var obj = {
@@ -90,15 +90,12 @@ export default function Record() {
                 category: item.category,
                 name: item.name,
                 order: cnt++,
-                // restTime: "", // -> 여기부터는 애초에 세팅이 돼서 올 수 있다고 본다. 운동 선택 페이지에서 받기
-                // totalVolume: 0,
-                // memo: {
-                //     date: '26-05-30',
-                //     content: '드롭으로 진행'
-                // },
+                restTime: item.restTime,
+                totalVolume: 0, // rep * weight 값
             }
             arr.push(obj);
         });
+        console.log(arr);
         return arr;
     }
     function initSet(recordArr) {
@@ -115,6 +112,7 @@ export default function Record() {
             }
             obj[item.id].push(result);
         });
+        console.log(obj);
         return obj;
     }
 
@@ -136,7 +134,7 @@ export default function Record() {
                             </Text>
                         </View>
                     </View>
-                    <View style={styles.container}>
+                    {/* <View style={styles.container}>
                         <View style={styles.topInfo}>
                             <View style={styles.topInfo_left}>
                                 <Text style={[styles.topInfo_left_text, { color: "#329EFF" }]}>1</Text>
@@ -197,7 +195,79 @@ export default function Record() {
                                 <Text style={[{ color: "#329EFF" }, styles.buttonContainer_btn_text]}>세트추가</Text>
                             </View>
                         </View>
-                    </View>
+                    </View> */}
+                    {record.map((item) => {
+                        const itemSet = set[item.id];
+                        console.log(itemSet);
+                        return (
+                            <View key={item.id} style={styles.container}>
+                                <View style={styles.topInfo}>
+                                    <View style={styles.topInfo_left}>
+                                        <Text style={[styles.topInfo_left_text, { color: "#329EFF" }]}>{(item.order) + 1}</Text>
+                                        <Text style={styles.topInfo_left_text}>{item.category}</Text>
+                                        <Text style={styles.topInfo_left_text}>|</Text>
+                                        <Text style={styles.topInfo_left_text}>{item.name}</Text>
+                                    </View>
+                                    <View style={styles.topInfo_right}>
+                                        <AntDesign name="info-circle" size={24} color="black" style={styles.topInfo_right_text} />
+                                        <Ionicons name="ellipsis-vertical" size={18} color="black" style={styles.topInfo_right_text} />
+                                    </View>
+                                </View>
+                                <View style={styles.volumeHeader}>
+                                    <Text>종목 볼륨</Text>
+                                    <Text>{item.totalVolume}kg</Text>
+                                    <Text>|</Text>
+                                    <Text>{item.restTime}</Text>
+                                </View>
+                                {/* TODO: memo 처리 후순위 */}
+                                <View style={styles.workoutMemoContainer}>
+                                    <Text style={{ color: '#a8b1b9', fontSize: 15, fontWeight: '700' }}>30-30-30 목</Text>
+                                    <Text style={{ color: '#A9B4BF' }}>드롭다운으로 함</Text>
+                                </View>
+                                <View style={styles.optionContainer}>
+                                    <View style={styles.optionButton}>
+                                        <Text style={styles.optionButton_text}>↺불러오기</Text>
+                                    </View>
+                                    <View style={styles.optionButton}>
+                                        <Text style={styles.optionButton_text}>⚡어시스턴트</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.setHeader}>
+                                    <Text style={styles.setHeader_text}>세트</Text>
+                                    <Text style={styles.setHeader_text}>kg</Text>
+                                    <Text style={styles.setHeader_text}>회</Text>
+                                    <Text style={styles.setHeader_text}>완료</Text>
+                                </View>
+                                {itemSet.map((setItem) => {
+                                    return (
+                                        <View key={setItem.id} style={styles.setContainer}>
+                                            <View style={styles.setContainer_item}>
+                                                <Text style={styles.setContainer_item_text}>{(setItem.order) + 1}</Text>
+                                            </View>
+                                            <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
+                                                <Text style={styles.setContainer_item_text}>{setItem.weight}</Text>
+                                            </View>
+                                            <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
+                                                <Text style={styles.setContainer_item_text}>{setItem.rep}</Text>
+                                            </View>
+                                            <View style={styles.setContainer_item}>
+                                                <AntDesign name="check" size={24} color="black" style={styles.setContainer_item_text} />
+                                            </View>
+                                        </View>);
+                                })}
+                                <View style={styles.buttonContainer}>
+                                    <View style={styles.buttonContainer_btn}>
+                                        <AntDesign name="minus" size={20} color="#8899AB" />
+                                        <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
+                                    </View>
+                                    <View style={styles.buttonContainer_btn}>
+                                        <AntDesign name="plus" size={20} color="#329EFF" />
+                                        <Text style={[{ color: "#329EFF" }, styles.buttonContainer_btn_text]}>세트추가</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        );
+                    })}
                     <DottedBorderContainer style={styles.addContainer} color="#CED5DC" strokeWidth={3} borderRadius={12}>
                         <View style={styles.addContainer_view}>
                             <AntDesign name="plus" size={20} color="#329EFF" />

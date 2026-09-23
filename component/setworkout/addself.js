@@ -51,7 +51,8 @@ export default function AddSelf() {
         const log = {
             id: logId, 
             date: date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate(),
-            memo: ""
+            memo: "",
+            todayVolume: 0,
         };
         return [exList.filter((item) => item.checked), log];
     }
