@@ -14,7 +14,7 @@ export default function Record() {
 
     // route params - log 세팅
     const [log, setLog] = useState(route.params[1]);
-    console.log(route.params[1]);
+    // console.log(route.params[1]);
 
     // route params - record 배열 객체 세팅
     const recordArr = initRecord(route.params[0], log);
@@ -95,7 +95,7 @@ export default function Record() {
             }
             arr.push(obj);
         });
-        console.log(arr);
+        // console.log(arr);
         return arr;
     }
     function initSet(recordArr) {
@@ -112,29 +112,38 @@ export default function Record() {
             }
             obj[item.id].push(result);
         });
-        console.log(obj);
+        // console.log(obj);
         return obj;
     }
 
     function addSet(recordId) {
-        var setArr = set[recordId];
-        var lastItem = setArr[setArr.length - 1];
+        var sets = set[recordId];
+        var last = sets[sets.length - 1];
 
-        var newItem = { ...lastItem };
-        newItem.order = newItem.order + 1;
-        newItem.weight = 0;
-        newItem.rep = 0;
-        newItem.pre = 0;
-        setArr.push(newItem);
-
-        setSet({ ...set, setArr });
+        var newItem = {
+            id: Math.floor(Math.random() * 10000),
+            recordId: recordId,
+            order: last.order + 1,
+            weight: 0,
+            rep: 0,
+            pre: 0
+        };
+        setSet({ ...set, [recordId]: [...sets, newItem] });
     }
 
     function removeSet(recordId) {
-        var setArr = set[recordId];
-        if (setArr.length == 1) return;
-        setArr.pop();
-        setSet({ ...set })
+        var sets = set[recordId];
+        if (sets.length === 1) return;
+        setSet({ ...set, [recordId]: sets.slice(0, -1) });
+    }
+
+    function updateSetValue(recordId, setId, type, text) {
+        const sets = set[recordId];
+        const newSets = sets.map((s) => {
+            if(s.id === setId) return {...s, [type]: text}
+            return s;
+        });
+        setSet({...set, [recordId]: newSets});
     }
 
     return (
@@ -203,10 +212,16 @@ export default function Record() {
                                                 <Text style={styles.setContainer_item_text}>{(setItem.order) + 1}</Text>
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
-                                                <TextInput style={[styles.setContainer_item_text, { height: 40 }]} placeholder={setItem.weight.toString()}></TextInput>
+                                                <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
+                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text)} 
+                                                selectTextOnFocus={true}
+                                                value={setItem.weight.toString()} />
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
-                                                <TextInput style={[styles.setContainer_item_text, { height: 40 }]} placeholder={setItem.rep.toString()}></TextInput>
+                                                <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
+                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text)} 
+                                                selectTextOnFocus={true}
+                                                value={setItem.rep.toString()} />
                                             </View>
                                             <View style={styles.setContainer_item}>
                                                 <AntDesign name="check" size={24} color="black" style={styles.setContainer_item_text} />
@@ -406,6 +421,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#8496A8',
         lineHeight: 40,
+        fontSize: 18,
+        fontWeight: '800',
+    },
+    setContainer_item_textInput: {
+        textAlign: 'center',
+        color: '#8496A8',
         fontSize: 18,
         fontWeight: '800',
     },
