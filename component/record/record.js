@@ -92,7 +92,7 @@ export default function Record() {
                 order: cnt++,
                 restTime: item.restTime,
                 totalVolume: 0, // rep * weight 값
-            }
+            };
             arr.push(obj);
         });
         // console.log(arr);
@@ -126,7 +126,8 @@ export default function Record() {
             order: last.order + 1,
             weight: 0,
             rep: 0,
-            pre: 0
+            pre: 0,
+            checked: false
         };
         setSet({ ...set, [recordId]: [...sets, newItem] });
     }
@@ -137,12 +138,19 @@ export default function Record() {
         setSet({ ...set, [recordId]: sets.slice(0, -1) });
     }
 
-    function updateSetValue(recordId, setId, type, text) {
+    function updateSetValue(recordId, setId, type, text, recordIndex) {
         const sets = set[recordId];
-        const newSets = sets.map((s) => {
-            if(s.id === setId) return {...s, [type]: text}
-            return s;
-        });
+        const newSets = sets.map((s) => s.id === setId ? {...s, [type]: text} : s);
+        const volumn = newSets.reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0); 
+        const newRecord = record.map((r, idx) => recordIndex === idx ? {...r, ['totalVolume']: volumn} : r);
+
+        setSet({...set, [recordId]: newSets});
+        setRecord(newRecord);
+    }
+
+    function setCheck(recordId, setId) {
+        const sets = set[recordId];
+        const newSets = sets.map((s) => s.id === setId ? {...s, ['checked'] : !s.checked} : s);
         setSet({...set, [recordId]: newSets});
     }
 
@@ -164,7 +172,7 @@ export default function Record() {
                             </Text>
                         </View>
                     </View>
-                    {record.map((item) => {
+                    {record.map((item, recordIndex) => {
                         const itemSet = set[item.id];
                         return (
                             <View key={item.id} style={styles.container}>
@@ -207,25 +215,28 @@ export default function Record() {
                                 </View>
                                 {itemSet.map((setItem) => {
                                     return (
-                                        <View key={setItem.order} style={styles.setContainer}>
+                                        <View key={setItem.id} style={styles.setContainer}>
                                             <View style={styles.setContainer_item}>
                                                 <Text style={styles.setContainer_item_text}>{(setItem.order) + 1}</Text>
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text)} 
+                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text, recordIndex)} 
                                                 selectTextOnFocus={true}
                                                 value={setItem.weight.toString()} />
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text)} 
+                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text, recordIndex)} 
                                                 selectTextOnFocus={true}
                                                 value={setItem.rep.toString()} />
                                             </View>
-                                            <View style={styles.setContainer_item}>
-                                                <AntDesign name="check" size={24} color="black" style={styles.setContainer_item_text} />
-                                            </View>
+                                            <Pressable 
+                                                style={[styles.setContainer_item, {backgroundColor: (setItem.checked ? '#329EFF' : '#F3F4F6')}]}
+                                                onPress={() => setCheck(item.id, setItem.id)}
+                                            >
+                                                <AntDesign name="check" size={24} style={[styles.setContainer_item_text, {color: (setItem.checked ? "#ffffff" : '#8496A8')}]} />
+                                            </Pressable>
                                         </View>);
                                 })}
                                 <View style={styles.buttonContainer}>
