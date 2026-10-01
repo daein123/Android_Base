@@ -77,8 +77,8 @@ export default function Record() {
         }
     ];
 
-    const [currentTotal, setCurrentTotal] = useState(0);
-    const [beforeTotal, setBeforeTotal] = useState(0);
+    const [currentTotal, setCurrentTotal] = useState(0);    // 현재 일지의 모든 운동량
+    const [beforeTotal, setBeforeTotal] = useState(0);      // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
 
     function initRecord(recordArr, logObj) {
         var arr = [];
@@ -108,7 +108,8 @@ export default function Record() {
                 order: 0,
                 weight: 0,
                 rep: 0,
-                pre: 0
+                pre: 0,
+                checked: false,
             }
             obj[item.id].push(result);
         });
@@ -142,16 +143,28 @@ export default function Record() {
         const sets = set[recordId];
         const newSets = sets.map((s) => s.id === setId ? {...s, [type]: text} : s);
         const volumn = newSets.reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0); 
-        const newRecord = record.map((r, idx) => recordIndex === idx ? {...r, ['totalVolume']: volumn} : r);
+        const newRecord = record.map((r, idx) => recordIndex === idx ? {...r, totalVolume: volumn} : r);
 
         setSet({...set, [recordId]: newSets});
         setRecord(newRecord);
+        updateC_TotalVolumn(newRecord);
     }
 
     function setCheck(recordId, setId) {
         const sets = set[recordId];
-        const newSets = sets.map((s) => s.id === setId ? {...s, ['checked'] : !s.checked} : s);
+        const newSets = sets.map((s) => s.id === setId ? {...s, checked : !s.checked} : s);
         setSet({...set, [recordId]: newSets});
+    }
+
+    // currentTotalVolumn 계산 함수
+    function updateC_TotalVolumn(recordObj) {
+        const volumn = recordObj.reduce((total, item) => total + Number(item.totalVolume), 0);
+        setCurrentTotal(volumn);
+    }
+
+    // Log 객체의 메모를 갱신
+    function setLogMemo(text) {
+        setLog({...log, memo: text});
     }
 
     return (
@@ -262,7 +275,10 @@ export default function Record() {
                         <Text style={styles.memoContainer_title}>
                             메모
                         </Text>
-                        <TextInput style={styles.memoContainer_content} placeholder={'오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요'}>
+                        <TextInput style={styles.memoContainer_content} multiline={true} placeholder={(log.memo ? log.memo : "오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요")}
+                            selectTextOnFocus={true}
+                            onChangeText={(text) => setLogMemo(text)}
+                        >
                         </TextInput>
                     </View>
                     <View style={styles.allCheckContainer}>
