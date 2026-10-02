@@ -133,27 +133,33 @@ export default function Record() {
         setSet({ ...set, [recordId]: [...sets, newItem] });
     }
 
-    function removeSet(recordId) {
+    function removeSet(recordId, recordIndex) {
         var sets = set[recordId];
         if (sets.length === 1) return;
-        setSet({ ...set, [recordId]: sets.slice(0, -1) });
+        const newSets = { [recordId]: sets.slice(0, -1) };
+        const volumn = newSets[recordId].reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0);
+        const newRecord = record.map((r, idx) => recordIndex === idx ? { ...r, totalVolume: volumn } : r);
+
+        setSet({ ...set, ...newSets });
+        setRecord(newRecord);
+        updateC_TotalVolumn(newRecord);
     }
 
     function updateSetValue(recordId, setId, type, text, recordIndex) {
         const sets = set[recordId];
-        const newSets = sets.map((s) => s.id === setId ? {...s, [type]: text} : s);
-        const volumn = newSets.reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0); 
-        const newRecord = record.map((r, idx) => recordIndex === idx ? {...r, totalVolume: volumn} : r);
+        const newSets = sets.map((s) => s.id === setId ? { ...s, [type]: text } : s);
+        const volumn = newSets.reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0);
+        const newRecord = record.map((r, idx) => recordIndex === idx ? { ...r, totalVolume: volumn } : r);
 
-        setSet({...set, [recordId]: newSets});
+        setSet({ ...set, [recordId]: newSets });
         setRecord(newRecord);
         updateC_TotalVolumn(newRecord);
     }
 
     function setCheck(recordId, setId) {
         const sets = set[recordId];
-        const newSets = sets.map((s) => s.id === setId ? {...s, checked : !s.checked} : s);
-        setSet({...set, [recordId]: newSets});
+        const newSets = sets.map((s) => s.id === setId ? { ...s, checked: !s.checked } : s);
+        setSet({ ...set, [recordId]: newSets });
     }
 
     // currentTotalVolumn 계산 함수
@@ -164,7 +170,7 @@ export default function Record() {
 
     // Log 객체의 메모를 갱신
     function setLogMemo(text) {
-        setLog({...log, memo: text});
+        setLog({ ...log, memo: text });
     }
 
     return (
@@ -234,26 +240,26 @@ export default function Record() {
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text, recordIndex)} 
-                                                selectTextOnFocus={true}
-                                                value={setItem.weight.toString()} />
+                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text, recordIndex)}
+                                                    selectTextOnFocus={true}
+                                                    value={setItem.weight.toString()} />
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text, recordIndex)} 
-                                                selectTextOnFocus={true}
-                                                value={setItem.rep.toString()} />
+                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text, recordIndex)}
+                                                    selectTextOnFocus={true}
+                                                    value={setItem.rep.toString()} />
                                             </View>
-                                            <Pressable 
-                                                style={[styles.setContainer_item, {backgroundColor: (setItem.checked ? '#329EFF' : '#F3F4F6')}]}
+                                            <Pressable
+                                                style={[styles.setContainer_item, { backgroundColor: (setItem.checked ? '#329EFF' : '#F3F4F6') }]}
                                                 onPress={() => setCheck(item.id, setItem.id)}
                                             >
-                                                <AntDesign name="check" size={24} style={[styles.setContainer_item_text, {color: (setItem.checked ? "#ffffff" : '#8496A8')}]} />
+                                                <AntDesign name="check" size={24} style={[styles.setContainer_item_text, { color: (setItem.checked ? "#ffffff" : '#8496A8') }]} />
                                             </Pressable>
                                         </View>);
                                 })}
                                 <View style={styles.buttonContainer}>
-                                    <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.id)}>
+                                    <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.id, recordIndex)}>
                                         <AntDesign name="minus" size={20} color="#8899AB" />
                                         <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
                                     </Pressable>
