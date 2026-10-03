@@ -14,7 +14,6 @@ export default function Record() {
 
     // route params - log 세팅
     const [log, setLog] = useState(route.params[1]);
-    // console.log(route.params[1]);
 
     // route params - record 배열 객체 세팅
     const recordArr = initRecord(route.params[0], log);
@@ -77,8 +76,19 @@ export default function Record() {
         }
     ];
 
-    const [currentTotal, setCurrentTotal] = useState(0);    // 현재 일지의 모든 운동량
     const [beforeTotal, setBeforeTotal] = useState(0);      // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
+    const volumns = {};
+    let currentTotal = 0;
+    let isAllCheck = true;
+    for (const setId in set) {
+        const obj = set[setId];
+        volumns[setId] = 0;
+        obj.forEach((s) => {
+            volumns[setId] += s.weight * s.rep; // 종목당 볼룸
+            if (s.checked === false) isAllCheck = false; // 전체 체크 여부 파악
+        });
+        currentTotal += volumns[setId];
+    }
 
     function initRecord(recordArr, logObj) {
         var arr = [];
@@ -91,11 +101,9 @@ export default function Record() {
                 name: item.name,
                 order: cnt++,
                 restTime: item.restTime,
-                totalVolume: 0, // rep * weight 값
             };
             arr.push(obj);
         });
-        // console.log(arr);
         return arr;
     }
     function initSet(recordArr) {
@@ -113,7 +121,6 @@ export default function Record() {
             }
             obj[item.id].push(result);
         });
-        // console.log(obj);
         return obj;
     }
 
@@ -133,27 +140,19 @@ export default function Record() {
         setSet({ ...set, [recordId]: [...sets, newItem] });
     }
 
-    function removeSet(recordId, recordIndex) {
+    function removeSet(recordId) {
         var sets = set[recordId];
         if (sets.length === 1) return;
         const newSets = { [recordId]: sets.slice(0, -1) };
-        const volumn = newSets[recordId].reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0);
-        const newRecord = record.map((r, idx) => recordIndex === idx ? { ...r, totalVolume: volumn } : r);
 
         setSet({ ...set, ...newSets });
-        setRecord(newRecord);
-        updateC_TotalVolumn(newRecord);
     }
 
-    function updateSetValue(recordId, setId, type, text, recordIndex) {
+    function updateSetValue(recordId, setId, type, text) {
         const sets = set[recordId];
         const newSets = sets.map((s) => s.id === setId ? { ...s, [type]: text } : s);
-        const volumn = newSets.reduce((total, s) => total + Number(s.rep) * Number(s.weight), 0);
-        const newRecord = record.map((r, idx) => recordIndex === idx ? { ...r, totalVolume: volumn } : r);
 
         setSet({ ...set, [recordId]: newSets });
-        setRecord(newRecord);
-        updateC_TotalVolumn(newRecord);
     }
 
     function setCheck(recordId, setId) {
@@ -162,10 +161,15 @@ export default function Record() {
         setSet({ ...set, [recordId]: newSets });
     }
 
-    // currentTotalVolumn 계산 함수
-    function updateC_TotalVolumn(recordObj) {
-        const volumn = recordObj.reduce((total, item) => total + Number(item.totalVolume), 0);
-        setCurrentTotal(volumn);
+    // updateCheck 처리 로직 : value 받아서 전체 check, uncheck 처리
+    function updateCheck(value) {
+        setSet(prev => {
+            const retObj = {};
+            for (const setId in set) {
+                retObj[setId] = prev[setId].map((s) => ({...s, checked : value}));
+            }
+            return retObj;
+        });
     }
 
     // Log 객체의 메모를 갱신
@@ -209,7 +213,7 @@ export default function Record() {
                                 </View>
                                 <View style={styles.volumeHeader}>
                                     <Text>종목 볼륨</Text>
-                                    <Text>{item.totalVolume}kg</Text>
+                                    <Text>{volumns[item.id]}kg</Text>
                                     <Text>|</Text>
                                     <Text>{item.restTime}</Text>
                                 </View>
@@ -240,13 +244,13 @@ export default function Record() {
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text, recordIndex)}
+                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text)}
                                                     selectTextOnFocus={true}
                                                     value={setItem.weight.toString()} />
                                             </View>
                                             <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
                                                 <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text, recordIndex)}
+                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text)}
                                                     selectTextOnFocus={true}
                                                     value={setItem.rep.toString()} />
                                             </View>
@@ -259,7 +263,7 @@ export default function Record() {
                                         </View>);
                                 })}
                                 <View style={styles.buttonContainer}>
-                                    <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.id, recordIndex)}>
+                                    <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.id)}>
                                         <AntDesign name="minus" size={20} color="#8899AB" />
                                         <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
                                     </Pressable>
@@ -288,7 +292,7 @@ export default function Record() {
                         </TextInput>
                     </View>
                     <View style={styles.allCheckContainer}>
-                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={() => { console.log(allCheck); setAllCheck(!allCheck); }} value={allCheck} />
+                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={(value) => { updateCheck(value) }} value={isAllCheck} />
                         <Text style={styles.allCheckContainer_text}>세트 전체 체크</Text>
                     </View>
                 </ScrollView>

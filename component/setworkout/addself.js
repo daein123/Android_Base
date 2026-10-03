@@ -52,7 +52,6 @@ export default function AddSelf() {
             id: logId, 
             date: date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate(),
             memo: "",
-            todayVolume: 0,
         };
         return [exList.filter((item) => item.checked), log];
     }
