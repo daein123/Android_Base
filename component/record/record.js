@@ -16,66 +16,20 @@ export default function Record() {
     const [log, setLog] = useState(route.params[1]);
 
     // route params - record 배열 객체 세팅
-    const recordArr = initRecord(route.params[0], log);
-    const [record, setRecord] = useState(recordArr);
+    const [record, setRecord] = useState(() => initRecord(route.params[0], log));
 
     // 초기 set 객체 배열 세팅
-    const setArr = initSet(recordArr);
-    const [set, setSet] = useState(setArr);
+    const [set, setSet] = useState(() => initSet(record));
 
-
+    // navigation
     const navigation = useNavigation();
 
+    // 날짜 계산
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
     const [activeIndex, setActiveIndex] = useState(0);
-    const [allCheck, setAllCheck] = useState(false);
 
-    const tempObj = [
-        {
-            order: 1,
-            type: "팔",
-            name: '케이블 푸시 다운',
-            totalVolume: '0',
-            restTime: '1:30',
-            memo: {
-                date: '26-05-30',
-                content: '드롭으로 진행'
-            },
-            set: {
-                1: { kg: 0, rep: 0, check: false }
-            }
-        },
-        {
-            order: 2,
-            type: "팔2",
-            name: '케이블 푸시 다운2',
-            totalVolume: '0',
-            restTime: '1:30',
-            memo: {
-                date: '26-05-30',
-                content: '드롭으로 진행'
-            },
-            set: {
-                1: { kg: 0, rep: 0, check: false }
-            }
-        },
-        {
-            order: 3,
-            type: "팔3",
-            name: '케이블 푸시 다운3',
-            totalVolume: '0',
-            restTime: '1:30',
-            memo: {
-                date: '26-05-30',
-                content: '드롭으로 진행'
-            },
-            set: {
-                1: { kg: 0, rep: 0, check: false }
-            }
-        }
-    ];
-
+    // 전체 볼륨 및 전체 체크 확인
     const [beforeTotal, setBeforeTotal] = useState(0);      // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
     const volumns = {};
     let currentTotal = 0;
@@ -195,7 +149,7 @@ export default function Record() {
                             </Text>
                         </View>
                     </View>
-                    {record.map((item, recordIndex) => {
+                    {record.map((item) => {
                         const itemSet = set[item.id];
                         return (
                             <View key={item.id} style={styles.container}>
