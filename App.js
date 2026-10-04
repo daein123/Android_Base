@@ -10,23 +10,26 @@ import History from './component/setworkout/history';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Record from './component/record/record';
+import { useEffect } from 'react';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+    useEffect(() => {
+        const sub = Keyboard.addListener('keyboardDidHide', () => Keyboard.dismiss());
+        return () => sub.remove();
+    }, []);
     return (
         // SetWorkoutP
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <TouchableWithoutFeedback>
-                <NavigationContainer onPress={Keyboard.dismiss}>
-                    <Stack.Navigator screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="Main" component={MainPage}></Stack.Screen>
-                        <Stack.Screen name="SetWorkout" component={SetWorkout}></Stack.Screen>
-                        <Stack.Screen name="History" component={History}></Stack.Screen>
-                        <Stack.Screen name="Record" component={Record}></Stack.Screen>
-                    </Stack.Navigator>
-                </NavigationContainer>
-            </TouchableWithoutFeedback>
+            <NavigationContainer onPress={Keyboard.dismiss}>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Main" component={MainPage}></Stack.Screen>
+                    <Stack.Screen name="SetWorkout" component={SetWorkout}></Stack.Screen>
+                    <Stack.Screen name="History" component={History}></Stack.Screen>
+                    <Stack.Screen name="Record" component={Record}></Stack.Screen>
+                </Stack.Navigator>
+            </NavigationContainer>
         </KeyboardAvoidingView>
     )
 }

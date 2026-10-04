@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import DottedBorderContainer from './dotted';
 import Checkbox from 'expo-checkbox';
 
@@ -27,7 +27,6 @@ export default function Record() {
     // 날짜 계산
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
-    const [activeIndex, setActiveIndex] = useState(0);
 
     // 전체 볼륨 및 전체 체크 확인
     const [beforeTotal, setBeforeTotal] = useState(0);      // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
@@ -139,7 +138,11 @@ export default function Record() {
                     <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
                     <AntDesign name="menu" size={24} color="black" />
                 </View>
-                <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                <ScrollView contentContainerStyle={styles.scrollContainer} 
+                            showsVerticalScrollIndicator={false}
+                            keyboardShouldPersistTaps="handled"
+                            keyboardDismissMode='on-drag'
+                >
                     <View style={styles.totalVolume}>
                         <Text style={styles.totalVolume_left_text}>전체 볼륨</Text>
                         <View style={styles.totalVolume_right}>
@@ -239,8 +242,10 @@ export default function Record() {
                         <Text style={styles.memoContainer_title}>
                             메모
                         </Text>
-                        <TextInput style={styles.memoContainer_content} multiline={true} placeholder={(log.memo ? log.memo : "오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요")}
-                            selectTextOnFocus={true}
+                        <TextInput 
+                            style={styles.memoContainer_content} 
+                            multiline={true} 
+                            value={(log.memo ? log.memo : "오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요")}
                             onChangeText={(text) => setLogMemo(text)}
                         >
                         </TextInput>

@@ -46,7 +46,6 @@ export default function AddSelf() {
     // Record.js에서 활용할 수 있도록 log, Record 객체 만들어 보내기
     function getWorkout() {
         const logId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
-        const recordId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
         const date = new Date();
         const log = {
             id: logId, 
@@ -105,11 +104,10 @@ export default function AddSelf() {
                 <View style={styles.bottomContainer_left}>
                     <AntDesign name="plus" size={20} color="#556678" />
                 </View>
-                <Pressable onPress={() => navigation.navigate('Record', getWorkout())} style={[styles.bottomContainer_right, {backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE')}]}>
-                    <Text style={[styles.bottomContainer_right_text, 
-                        {color: (workout.length > 0 ? '#ffffff' : '#C2CAD4')}]
-                    }>
-                    운동을 선택해 주세요
+                <Pressable style={[styles.bottomContainer_right, {backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE')}]}
+                    onPress={() => { if (workout.length > 0) navigation.navigate('Record', getWorkout()); }}>
+                    <Text style={[styles.bottomContainer_right_text, {color: (workout.length > 0 ? '#ffffff' : '#C2CAD4')}]}>
+                        운동을 선택해 주세요
                     </Text>
                 </Pressable>
             </View>
