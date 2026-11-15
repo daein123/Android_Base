@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         color: '#858d96'
     },
     tabScroll: {
-        height: 30,
+        height: 40,
         flexGrow: 0,
     },
     tabContainer: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         borderColor: '#E7EAEC'
     },
     exerciseContainer: {
-        flex: 1,
+        flexGrow: 1,
     },
     exerciseItem: {
         paddingVertical: 5,
