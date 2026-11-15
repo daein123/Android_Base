@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
 import { exerciseList } from './exerciseData'
@@ -19,10 +19,41 @@ export default function AddSelf() {
     // 0: 북마크, 1: 전체, 2: 하체, 3: 가슴, 4: 등....
     const [showExerciseType, setShowExerciseType] = useState(1);
 
-    const [exList, setExList] = useState(exerciseList);
+    const [exList, setExList] = useState([]);
 
     const [workout, setWorkout] = useState([]); // record로 보낼 운동들 (일단은 name으로 보내기)
     const [workoutCategory, setWorkoutCategory] = useState([]);
+
+    useEffect(() => {
+        const exerciseImages = {
+            '백스쿼트': require('../../assets/exercise/백스쿼트.jpg'),
+            '레그 익스텐션': require('../../assets/exercise/레그 익스텐션.jpg'),
+            '레그컬': require('../../assets/exercise/레그컬.jpg'),
+            '루마니안 데드리프트': require('../../assets/exercise/루마니안 데드리프트.jpg'),
+
+            '벤치프레스': require('../../assets/exercise/벤치프레스.jpg'),
+            '인클라인 덤벨 프레스': require('../../assets/exercise/인클라인 덤벨 프레스.jpg'),
+            '어시스트 딥스': require('../../assets/exercise/어시스트 딥스.jpg'),
+
+            '풀업': require('../../assets/exercise/풀업.jpg'),
+            '롱풀': require('../../assets/exercise/롱풀.jpg'),
+            '컨벤셔널 데드리프트': require('../../assets/exercise/컨벤셔널 데드리프트.jpg'),
+
+            '사이드 레터럴 레이즈': require('../../assets/exercise/사이드 레터럴 레이즈.jpg'),
+
+            '케이블 푸쉬 다운': require('../../assets/exercise/케이블 푸쉬 다운.jpg'),
+        };
+        async function loadExercise() {
+            const res = await fetch('http://192.168.0.2:8080/api/exercise');
+            const data = await res.json();
+            console.log(data);
+
+            setExList(data.map((e) => {
+                return { ...e, checked: false, image: exerciseImages[e.name]}
+            }));
+        }
+        loadExercise();
+    }, [])
 
     // exList에 check 값을 반영하는 함수
     function updateChecked(exName) {
@@ -35,24 +66,46 @@ export default function AddSelf() {
         });
         setExList(list);
     }
-    
+
     // record.js로 보낼 운동들에 대하여 workout 변수에 설정하는 함수
-    function updateWorkout(exName,  checked) {
+    function updateWorkout(exName, checked) {
         const arr = workout.filter((item) => item !== exName);
         if (checked === false) setWorkout(arr);
         else setWorkout([...arr, exName]);
     }
 
     // Record.js에서 활용할 수 있도록 log, Record 객체 만들어 보내기
-    function getWorkout() {
-        const logId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
-        const date = new Date();
+    function getWorkout(data) {
         const log = {
-            id: logId, 
-            date: date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate(),
-            memo: "",
+            id: data.id,
+            date: data.logDate,
+            memo: ""
         };
         return [exList.filter((item) => item.checked), log];
+    }
+
+    async function saveInitLog() {
+        // const logId = Math.floor(Math.random() * 100000); // 5자리 무작위 숫자
+        const dateObj = new Date();
+        const getMonth = String(dateObj.getMonth() + 1);
+        let normalMonth = getMonth.length === 1 ? "0" + getMonth : getMonth;
+        const getDate = String(dateObj.getDate());
+        let normalDate = getDate.length === 1 ? "0" + getDate : getDate;
+
+        const log = {
+            id: 0,
+            date: dateObj.getFullYear() + "-" + normalMonth + "-" + normalDate,
+            memo: ""
+        };
+
+        const res = await fetch("http://192.168.0.2:8080/api/log/initSave", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(log),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        return data;
     }
     return (
         <View style={styles.container}>
@@ -104,9 +157,9 @@ export default function AddSelf() {
                 <View style={styles.bottomContainer_left}>
                     <AntDesign name="plus" size={20} color="#556678" />
                 </View>
-                <Pressable style={[styles.bottomContainer_right, {backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE')}]}
-                    onPress={() => { if (workout.length > 0) navigation.navigate('Record', getWorkout()); }}>
-                    <Text style={[styles.bottomContainer_right_text, {color: (workout.length > 0 ? '#ffffff' : '#C2CAD4')}]}>
+                <Pressable style={[styles.bottomContainer_right, { backgroundColor: (workout.length > 0 ? '#329EFF' : '#E7EBEE') }]}
+                    onPress={async () => { if (workout.length > 0) navigation.navigate('Record', getWorkout(await saveInitLog())); }}>
+                    <Text style={[styles.bottomContainer_right_text, { color: (workout.length > 0 ? '#ffffff' : '#C2CAD4') }]}>
                         운동을 선택해 주세요
                     </Text>
                 </Pressable>

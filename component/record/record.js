@@ -8,126 +8,121 @@ import { useState } from 'react';
 import DottedBorderContainer from './dotted';
 import Checkbox from 'expo-checkbox';
 
+const makeKey = () => Math.random().toString(36).slice(2);
+
+function initSet(order) {
+    return { key: makeKey(), order, weight: 0, rep: 0, pre: 0, checked: false };
+}
+
+function initRecord(exercises) {
+    return exercises.map((item, index) => ({
+        key: makeKey(),
+        exerciseId: item.id,
+        name: item.name,
+        category: item.category,
+        order: index,
+        restTime: item.restTime,
+        set: [initSet(0)],
+    }));
+}
+
+// route.params = [선택한 운동 목록, 서버에서 받은 일지]
+function initLog(params) {
+    return { ...params[1], record: initRecord(params[0]) };
+}
+
+// 서버(PUT /api/saveLog)로 보낼 모양: 화면용 값(key, name, category)은 빼고 입력값은 숫자로
+async function toPayload(log) {
+    const data = {
+        id: log.id,
+        date: log.date,
+        memo: log.memo,
+        record: log.record.map((r) => ({
+            exerciseId: r.exerciseId,
+            logId: log.id,
+            sortOrder: r.order,
+            restTime: r.restTime,
+            set: r.set.map((s) => ({
+                sortOrder: s.order,
+                weight: Number(s.weight),
+                rep: Number(s.rep),
+                pre: s.pre,
+                checked: s.checked,
+            })),
+        })),
+    };
+
+    const res = await fetch('http://192.168.0.2:8080/api/saveLog', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        }
+    );
+    return data;
+}
+
 export default function Record() {
-    // route 
     const route = useRoute();
-
-    // route params - log 세팅
-    const [log, setLog] = useState(route.params[1]);
-
-    // route params - record 배열 객체 세팅
-    const [record, setRecord] = useState(() => initRecord(route.params[0], log));
-
-    // 초기 set 객체 배열 세팅
-    const [set, setSet] = useState(() => initSet(record));
-
-    // navigation
     const navigation = useNavigation();
 
-    // 날짜 계산
+    const [log, setLog] = useState(() => initLog(route.params));
+    const [beforeTotal, setBeforeTotal] = useState(0); // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
+
     const today = new Date();
     const dateText = today.getMonth() + 1 + "월 " + today.getDate() + "일";
 
-    // 전체 볼륨 및 전체 체크 확인
-    const [beforeTotal, setBeforeTotal] = useState(0);      // TODO: 오늘 기준 일주일 전의 운동량 받아오기 (DB 완성 시)
-    const volumns = {};
+    // 볼륨과 전체 체크 여부는 state에 두지 않고 렌더할 때마다 세트로 계산
+    const volumes = {};
     let currentTotal = 0;
     let isAllCheck = true;
-    for (const setId in set) {
-        const obj = set[setId];
-        volumns[setId] = 0;
-        obj.forEach((s) => {
-            volumns[setId] += s.weight * s.rep; // 종목당 볼룸
-            if (s.checked === false) isAllCheck = false; // 전체 체크 여부 파악
-        });
-        currentTotal += volumns[setId];
+    log.record.forEach((r) => {
+        volumes[r.key] = r.set.reduce((t, s) => t + s.weight * s.rep, 0);
+        currentTotal += volumes[r.key];
+        if (r.set.some((s) => !s.checked)) isAllCheck = false;
+    });
+
+    // recordKey에 해당하는 기록의 세트 배열만 바꿔치기
+    function updateSets(recordKey, makeNewSets) {
+        setLog((prev) => ({
+            ...prev,
+            record: prev.record.map((r) =>
+                r.key !== recordKey ? r : { ...r, set: makeNewSets(r.set) }
+            ),
+        }));
     }
 
-    function initRecord(recordArr, logObj) {
-        var arr = [];
-        var cnt = 0;
-        recordArr.forEach((item) => {
-            var obj = {
-                logId: logObj.id,
-                id: Math.floor(Math.random() * 100000),
-                category: item.category,
-                name: item.name,
-                order: cnt++,
-                restTime: item.restTime,
-            };
-            arr.push(obj);
-        });
-        return arr;
-    }
-    function initSet(recordArr) {
-        var obj = {};
-        recordArr.forEach((item) => {
-            obj[item.id] = []
-            var result = {
-                id: Math.floor(Math.random() * 100000),
-                recordId: item.id,
-                order: 0,
-                weight: 0,
-                rep: 0,
-                pre: 0,
-                checked: false,
-            }
-            obj[item.id].push(result);
-        });
-        return obj;
+    function addSet(recordKey) {
+        updateSets(recordKey, (sets) => [...sets, initSet(sets.length)]);
     }
 
-    function addSet(recordId) {
-        var sets = set[recordId];
-        var last = sets[sets.length - 1];
-
-        var newItem = {
-            id: Math.floor(Math.random() * 10000),
-            recordId: recordId,
-            order: last.order + 1,
-            weight: 0,
-            rep: 0,
-            pre: 0,
-            checked: false
-        };
-        setSet({ ...set, [recordId]: [...sets, newItem] });
+    function removeSet(recordKey) {
+        updateSets(recordKey, (sets) => (sets.length === 1 ? sets : sets.slice(0, -1)));
     }
 
-    function removeSet(recordId) {
-        var sets = set[recordId];
-        if (sets.length === 1) return;
-        const newSets = { [recordId]: sets.slice(0, -1) };
-
-        setSet({ ...set, ...newSets });
+    function updateSetValue(recordKey, setKey, type, text) {
+        updateSets(recordKey, (sets) =>
+            sets.map((s) => (s.key !== setKey ? s : { ...s, [type]: text }))
+        );
     }
 
-    function updateSetValue(recordId, setId, type, text) {
-        const sets = set[recordId];
-        const newSets = sets.map((s) => s.id === setId ? { ...s, [type]: text } : s);
-
-        setSet({ ...set, [recordId]: newSets });
+    function setCheck(recordKey, setKey) {
+        updateSets(recordKey, (sets) =>
+            sets.map((s) => (s.key !== setKey ? s : { ...s, checked: !s.checked }))
+        );
     }
 
-    function setCheck(recordId, setId) {
-        const sets = set[recordId];
-        const newSets = sets.map((s) => s.id === setId ? { ...s, checked: !s.checked } : s);
-        setSet({ ...set, [recordId]: newSets });
-    }
-
-    // updateCheck 처리 로직 : value 받아서 전체 check, uncheck 처리
     function updateCheck(value) {
-        setSet(prev => {
-            const retObj = {};
-            for (const setId in set) {
-                retObj[setId] = prev[setId].map((s) => ({...s, checked : value}));
-            }
-            return retObj;
-        });
+        setLog((prev) => ({
+            ...prev,
+            record: prev.record.map((r) => ({
+                ...r,
+                set: r.set.map((s) => ({ ...s, checked: value })),
+            })),
+        }));
     }
 
-    // Log 객체의 메모를 갱신
     function setLogMemo(text) {
-        setLog({ ...log, memo: text });
+        setLog((prev) => ({ ...prev, memo: text }));
     }
 
     return (
@@ -138,10 +133,10 @@ export default function Record() {
                     <Text style={{ fontWeight: '800', fontSize: 16 }}>{dateText}</Text>
                     <AntDesign name="menu" size={24} color="black" />
                 </View>
-                <ScrollView contentContainerStyle={styles.scrollContainer} 
-                            showsVerticalScrollIndicator={false}
-                            keyboardShouldPersistTaps="handled"
-                            keyboardDismissMode='on-drag'
+                <ScrollView contentContainerStyle={styles.scrollContainer}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    keyboardDismissMode='on-drag'
                 >
                     <View style={styles.totalVolume}>
                         <Text style={styles.totalVolume_left_text}>전체 볼륨</Text>
@@ -152,86 +147,82 @@ export default function Record() {
                             </Text>
                         </View>
                     </View>
-                    {record.map((item) => {
-                        const itemSet = set[item.id];
-                        return (
-                            <View key={item.id} style={styles.container}>
-                                <View style={styles.topInfo}>
-                                    <View style={styles.topInfo_left}>
-                                        <Text style={[styles.topInfo_left_text, { color: "#329EFF" }]}>{(item.order) + 1}</Text>
-                                        <Text style={styles.topInfo_left_text}>{item.category}</Text>
-                                        <Text style={styles.topInfo_left_text}>|</Text>
-                                        <Text style={styles.topInfo_left_text}>{item.name}</Text>
-                                    </View>
-                                    <View style={styles.topInfo_right}>
-                                        <AntDesign name="info-circle" size={24} color="black" style={styles.topInfo_right_text} />
-                                        <Ionicons name="ellipsis-vertical" size={18} color="black" style={styles.topInfo_right_text} />
-                                    </View>
+                    {log.record.map((item) => (
+                        <View key={item.key} style={styles.container}>
+                            <View style={styles.topInfo}>
+                                <View style={styles.topInfo_left}>
+                                    <Text style={[styles.topInfo_left_text, { color: "#329EFF" }]}>{item.order + 1}</Text>
+                                    <Text style={styles.topInfo_left_text}>{item.category}</Text>
+                                    <Text style={styles.topInfo_left_text}>|</Text>
+                                    <Text style={styles.topInfo_left_text}>{item.name}</Text>
                                 </View>
-                                <View style={styles.volumeHeader}>
-                                    <Text>종목 볼륨</Text>
-                                    <Text>{volumns[item.id]}kg</Text>
-                                    <Text>|</Text>
-                                    <Text>{item.restTime}</Text>
-                                </View>
-                                {/* TODO: memo 처리 후순위 */}
-                                <View style={styles.workoutMemoContainer}>
-                                    <Text style={{ color: '#a8b1b9', fontSize: 15, fontWeight: '700' }}>30-30-30 목</Text>
-                                    <Text style={{ color: '#A9B4BF' }}>드롭다운으로 함</Text>
-                                </View>
-                                <View style={styles.optionContainer}>
-                                    <View style={styles.optionButton}>
-                                        <Text style={styles.optionButton_text}>↺불러오기</Text>
-                                    </View>
-                                    <View style={styles.optionButton}>
-                                        <Text style={styles.optionButton_text}>⚡어시스턴트</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.setHeader}>
-                                    <Text style={styles.setHeader_text}>세트</Text>
-                                    <Text style={styles.setHeader_text}>kg</Text>
-                                    <Text style={styles.setHeader_text}>회</Text>
-                                    <Text style={styles.setHeader_text}>완료</Text>
-                                </View>
-                                {itemSet.map((setItem) => {
-                                    return (
-                                        <View key={setItem.id} style={styles.setContainer}>
-                                            <View style={styles.setContainer_item}>
-                                                <Text style={styles.setContainer_item_text}>{(setItem.order) + 1}</Text>
-                                            </View>
-                                            <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
-                                                <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'weight', text)}
-                                                    selectTextOnFocus={true}
-                                                    value={setItem.weight.toString()} />
-                                            </View>
-                                            <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
-                                                <TextInput keyboardType='numeric' style={[styles.setContainer_item_textInput, { height: 40 }]}
-                                                    onChangeText={(text) => updateSetValue(item.id, setItem.id, 'rep', text)}
-                                                    selectTextOnFocus={true}
-                                                    value={setItem.rep.toString()} />
-                                            </View>
-                                            <Pressable
-                                                style={[styles.setContainer_item, { backgroundColor: (setItem.checked ? '#329EFF' : '#F3F4F6') }]}
-                                                onPress={() => setCheck(item.id, setItem.id)}
-                                            >
-                                                <AntDesign name="check" size={24} style={[styles.setContainer_item_text, { color: (setItem.checked ? "#ffffff" : '#8496A8') }]} />
-                                            </Pressable>
-                                        </View>);
-                                })}
-                                <View style={styles.buttonContainer}>
-                                    <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.id)}>
-                                        <AntDesign name="minus" size={20} color="#8899AB" />
-                                        <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
-                                    </Pressable>
-                                    <Pressable style={styles.buttonContainer_btn} onPress={() => addSet(item.id)}>
-                                        <AntDesign name="plus" size={20} color="#329EFF" />
-                                        <Text style={[{ color: "#329EFF" }, styles.buttonContainer_btn_text]}>세트추가</Text>
-                                    </Pressable>
+                                <View style={styles.topInfo_right}>
+                                    <AntDesign name="info-circle" size={24} color="black" style={styles.topInfo_right_text} />
+                                    <Ionicons name="ellipsis-vertical" size={18} color="black" style={styles.topInfo_right_text} />
                                 </View>
                             </View>
-                        );
-                    })}
+                            <View style={styles.volumeHeader}>
+                                <Text>종목 볼륨</Text>
+                                <Text>{volumes[item.key]}kg</Text>
+                                <Text>|</Text>
+                                <Text>{item.restTime}</Text>
+                            </View>
+                            {/* TODO: memo 처리 후순위 */}
+                            <View style={styles.workoutMemoContainer}>
+                                <Text style={{ color: '#a8b1b9', fontSize: 15, fontWeight: '700' }}>30-30-30 목</Text>
+                                <Text style={{ color: '#A9B4BF' }}>드롭다운으로 함</Text>
+                            </View>
+                            <View style={styles.optionContainer}>
+                                <View style={styles.optionButton}>
+                                    <Text style={styles.optionButton_text}>↺불러오기</Text>
+                                </View>
+                                <View style={styles.optionButton}>
+                                    <Text style={styles.optionButton_text}>⚡어시스턴트</Text>
+                                </View>
+                            </View>
+                            <View style={styles.setHeader}>
+                                <Text style={styles.setHeader_text}>세트</Text>
+                                <Text style={styles.setHeader_text}>kg</Text>
+                                <Text style={styles.setHeader_text}>회</Text>
+                                <Text style={styles.setHeader_text}>완료</Text>
+                            </View>
+                            {item.set.map((setItem) => (
+                                <View key={setItem.key} style={styles.setContainer}>
+                                    <View style={styles.setContainer_item}>
+                                        <Text style={styles.setContainer_item_text}>{setItem.order + 1}</Text>
+                                    </View>
+                                    <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
+                                        <TextInput keyboardType='numeric' style={styles.setContainer_item_textInput}
+                                            onChangeText={(text) => updateSetValue(item.key, setItem.key, 'weight', text)}
+                                            selectTextOnFocus
+                                            value={setItem.weight.toString()} />
+                                    </View>
+                                    <View style={[styles.setContainer_item, styles.setContainer_item_main]}>
+                                        <TextInput keyboardType='numeric' style={styles.setContainer_item_textInput}
+                                            onChangeText={(text) => updateSetValue(item.key, setItem.key, 'rep', text)}
+                                            selectTextOnFocus
+                                            value={setItem.rep.toString()} />
+                                    </View>
+                                    <Pressable
+                                        style={[styles.setContainer_item, { backgroundColor: (setItem.checked ? '#329EFF' : '#F3F4F6') }]}
+                                        onPress={() => setCheck(item.key, setItem.key)}
+                                    >
+                                        <AntDesign name="check" size={24} style={[styles.setContainer_item_text, { color: (setItem.checked ? "#ffffff" : '#8496A8') }]} />
+                                    </Pressable>
+                                </View>
+                            ))}
+                            <View style={styles.buttonContainer}>
+                                <Pressable style={styles.buttonContainer_btn} onPress={() => removeSet(item.key)}>
+                                    <AntDesign name="minus" size={20} color="#8899AB" />
+                                    <Text style={[{ color: "#8899AB" }, styles.buttonContainer_btn_text]}>세트제거</Text>
+                                </Pressable>
+                                <Pressable style={styles.buttonContainer_btn} onPress={() => addSet(item.key)}>
+                                    <AntDesign name="plus" size={20} color="#329EFF" />
+                                    <Text style={[{ color: "#329EFF" }, styles.buttonContainer_btn_text]}>세트추가</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    ))}
                     <DottedBorderContainer style={styles.addContainer} color="#CED5DC" strokeWidth={3} borderRadius={12}>
                         <View style={styles.addContainer_view}>
                             <AntDesign name="plus" size={20} color="#329EFF" />
@@ -239,20 +230,17 @@ export default function Record() {
                         </View>
                     </DottedBorderContainer>
                     <View style={styles.memoContainer}>
-                        <Text style={styles.memoContainer_title}>
-                            메모
-                        </Text>
-                        <TextInput 
-                            style={styles.memoContainer_content} 
-                            multiline={true} 
+                        <Text style={styles.memoContainer_title}>메모</Text>
+                        <TextInput
+                            style={styles.memoContainer_content}
+                            multiline={true}
                             value={(log.memo ? log.memo : "오늘 운동은 어땠나요?\n운동 후기를 간단히 적어보세요")}
-                            onChangeText={(text) => setLogMemo(text)}
-                        >
-                        </TextInput>
+                            onChangeText={setLogMemo}
+                        />
                     </View>
                     <View style={styles.allCheckContainer}>
-                        <Checkbox style={styles.allCheckContainer_checkbox} color='#329EFF' onValueChange={(value) => { updateCheck(value) }} value={isAllCheck} />
-                        <Text style={styles.allCheckContainer_text}>세트 전체 체크</Text>
+                        <Checkbox color='#329EFF' onValueChange={updateCheck} value={isAllCheck} />
+                        <Text>세트 전체 체크</Text>
                     </View>
                 </ScrollView>
                 <View style={styles.bottomContainer}>
@@ -267,19 +255,19 @@ export default function Record() {
                             <Text style={{ fontSize: 12, fontWeight: '800', color: '#44515C' }}>운동 시간</Text>
                         </View>
                     </View>
-                    <View style={styles.bottomContainer_right}>
+                    {/* TODO: toPayload(log)를 PUT /api/saveLog로 전송 */}
+                    <Pressable style={styles.bottomContainer_right} onPress={() => console.log(JSON.stringify(toPayload(log)))}>
                         <Text style={{ fontSize: 19, fontWeight: '600', color: '#ffffff' }}>편집 완료</Text>
-                    </View>
+                    </Pressable>
                 </View>
             </SafeAreaView>
-        </View >
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        // backgroundColor: '#fff',
     },
     mainContainer: {
         flex: 1,
@@ -296,7 +284,6 @@ const styles = StyleSheet.create({
     scrollContainer: {
         backgroundColor: "#F3F4F6"
     },
-
 
     totalVolume: {
         backgroundColor: '#ffffff',
@@ -410,7 +397,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#F3F4F6",
         width: 60,
         height: 35,
-        fontSize: 16,
         borderRadius: 10,
     },
     setContainer_item_text: {
@@ -421,6 +407,7 @@ const styles = StyleSheet.create({
         fontWeight: '800',
     },
     setContainer_item_textInput: {
+        height: 40,
         textAlign: 'center',
         color: '#8496A8',
         fontSize: 18,
@@ -451,7 +438,6 @@ const styles = StyleSheet.create({
     },
 
     addContainer: {
-        backgroundColor: 'color',
         marginHorizontal: 20,
         marginVertical: 5,
         backgroundColor: '#ffffff',
@@ -491,11 +477,6 @@ const styles = StyleSheet.create({
         gap: 5,
         paddingVertical: 20,
     },
-    allCheckContainer_checkbox: {
-    },
-    allCheckContainer_text: {
-
-    },
 
     bottomContainer: {
         backgroundColor: '#ffffff',
@@ -517,17 +498,12 @@ const styles = StyleSheet.create({
     },
     bottomContainer_left_item: {
         alignItems: 'center',
-        alignContent: 'center',
         justifyContent: 'center',
-    },
-    bottomContainer_left_item_text: {
-        fontSize: 15,
     },
     divider: {
         width: 1,
+        height: 30,
         backgroundColor: '#d3d4d4',
-        height: '30',
-
     },
     bottomContainer_right: {
         backgroundColor: '#329EFF',
